@@ -1,4 +1,5 @@
 export enum ResponseResult {
     SUCCESS = 'success',
-    FAULURE = 'faulure',
+    FAILURE = 'failure',
+    EXCEPTION = 'exception',
 }
