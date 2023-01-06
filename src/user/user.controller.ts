@@ -8,6 +8,8 @@ import {
     Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import * as fns from 'date-fns';
+import { random } from 'lodash';
 import { UserNotExistException } from 'src/common/lib/exceptions';
 import { User } from './user.schema';
 import { UserService } from './user.service';
@@ -57,5 +59,37 @@ export class UserController {
 
         usr.passd = '······';
         return usr;
+    }
+
+    /**
+     * 根据用户id查询用户信息
+     */
+    @ApiTags('User')
+    @ApiOperation({ summary: '根据用户id查询用户日活' })
+    @Get('/:id/activities')
+    async getDailyActivities(): Promise<{
+        startDate: Date;
+        endDate: Date;
+        list: UserActivity[];
+    }> {
+        const today = new Date();
+        const start = fns.subYears(today, 1);
+        const length = fns.differenceInDays(today, start);
+
+        logger.debug(`The last year has ${length} days`);
+        const list = Array(length)
+            .fill(null)
+            .map<UserActivity>((_, index) => {
+                const date = fns.startOfDay(fns.addDays(start, index + 1));
+                return {
+                    date,
+                    commits: random(0, 20, false),
+                    month: fns.getMonth(date),
+                    day: fns.getDay(date),
+                    week: fns.getWeek(date),
+                };
+            });
+
+        return { startDate: start, endDate: today, list };
     }
 }

@@ -23,7 +23,6 @@ export class UserService {
     async create(info: User): Promise<UserDocument> {
         const passd = await bcrypt.hash(info.passd, 10);
         info.passd = passd;
-        console.log(9, info);
         const user = new this.UserModel(info);
 
         return await user.save();

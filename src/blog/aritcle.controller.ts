@@ -5,7 +5,7 @@ import {
     ApiSecurity,
     ApiTags,
 } from '@nestjs/swagger';
-import { ResponseResult } from 'src/common/types/enum.interface';
+import { Article } from './article.schema';
 import { BlogService } from './blog.service';
 
 class ArticleQueryDTO {
@@ -23,7 +23,7 @@ class ArticleQueryDTO {
 @ApiSecurity('basic')
 @Controller('/blog/articles')
 export class ArticleController {
-    constructor(private readonly blogSrv: BlogService) {}
+    constructor(private readonly blog: BlogService) {}
 
     /**
      * 根据查询参数获取符合指定临街条件的文章列表
@@ -35,10 +35,8 @@ export class ArticleController {
     @ApiTags('Blog')
     @ApiOperation({ summary: '根据查询参数获取符合指定临街条件的文章列表' })
     @Get()
-    getArticles(@Query() query: ArticleQueryDTO): ResponseBody<any> {
-        return Promise.resolve({
-            meta: { code: 200, result: ResponseResult.SUCCESS },
-            payload: { data: this.blogSrv.getArticles(), query },
-        });
+    async getArticles(@Query() query): Promise<Article[]> {
+        console.log(query);
+        return await this.blog.getArticles(query);
     }
 }
